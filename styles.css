@@ -103,6 +103,32 @@ button, input, select, textarea { font: inherit; }
   box-shadow: var(--shadow-sm);
 }
 .hero .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* When a real logo image loads, switch from circular avatar to wide brand logo */
+.hero[data-has-logo] .avatar {
+  width: auto; height: auto;
+  max-width: min(280px, 70vw);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  margin: 0 auto 12px;
+  overflow: visible;
+}
+.hero[data-has-logo] .avatar img {
+  width: 100%; height: auto;
+  object-fit: contain;
+  display: block;
+}
+/* Logo contains the brand name; hide the duplicate h1 visually but keep for screen readers + SEO */
+.hero[data-has-logo] h1 {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .hero h1 {
   margin: 0 0 4px;
   font-size: 22px;

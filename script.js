@@ -86,7 +86,8 @@
     setHref('#hero-cta', customWaUrl);
     setHref('#tokopedia-link', shop.tokopediaUrl);
 
-    // Avatar — if shop.logoUrl exists as a real image, swap; else keep initials
+    // Avatar — if shop.logoUrl loads, swap the "BW" circle for the real brand logo
+    // and mark the hero so CSS lays out for a wide rectangular logo (not a circle)
     const avatar = document.getElementById('avatar');
     if (avatar && shop.logoUrl) {
       const probe = new Image();
@@ -95,7 +96,10 @@
         const img = document.createElement('img');
         img.src = shop.logoUrl;
         img.alt = `${shop.name} logo`;
+        img.decoding = 'async';
         avatar.appendChild(img);
+        const hero = avatar.closest('.hero');
+        if (hero) hero.setAttribute('data-has-logo', '');
       };
       probe.src = shop.logoUrl;
     }
