@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# OS junk
+Thumbs.db
+
+# Optional: don't deploy local preview files (uncomment to skip them in production)
+# preview*.html
