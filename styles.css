@@ -31,6 +31,10 @@ button, input, select, textarea { font: inherit; }
   --wa: #25D366;
   --wa-dark: #1da851;
   --wa-text: #128c47;
+  /* Landing-page neutrals — sticky-call uses the deep steel,
+     everything else stays in the existing ink / surface palette. */
+  --steel-900: #0f1419;
+  --steel-700: #232b36;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
   --radius-sm: 8px;
@@ -367,3 +371,272 @@ footer .legal {
   .subheader { padding: 28px 0 8px; }
   .subheader h1 { font-size: 26px; }
 }
+
+/* ============================================================ */
+/* LANDING PAGE (industrial bold) — applied via body[data-page="landing"]
+   to avoid touching kotak.html / bulat.html which still use the
+   lynk.id-style hero/tiles above.                                */
+/* ============================================================ */
+
+body[data-page="landing"] {
+  padding-bottom: 76px; /* space for sticky bottom bar (mobile) */
+}
+
+/* Top bar additions for the landing page — small ghost call button
+   next to the WhatsApp pill. Top bar itself uses the default light
+   .top-bar styles defined above. */
+.top-bar-ctas {
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.top-cta--light-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 999px;
+  min-height: 36px;
+  min-width: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none;
+}
+.top-cta--light-ghost svg { width: 16px; height: 16px; }
+.top-cta--light-ghost:active { background: var(--bg); }
+
+/* Stacked dual-CTA in hero (WhatsApp green + Telepon outlined).
+   Two rows on mobile, side-by-side on desktop (handled below). */
+.cta-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin: 8px auto 0;
+}
+.cta-stack .cta { max-width: none; width: 100%; }
+
+/* Outlined Telepon CTA — dark text + border, used alongside the
+   green WhatsApp .cta for the dual-CTA hero. */
+.cta--outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  box-shadow: none;
+}
+.cta--outline:active { background: var(--bg); }
+
+/* ----- Section bands -----
+   Sections sit on the body's gray bg; .band--light gives a subtle
+   white-ish band for alternation when we want visual separation. */
+.band { padding: 36px 0; }
+.band--light { background: var(--surface); }
+.band-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.band-sub {
+  font-size: 14px;
+  color: var(--ink-muted);
+  margin: 0 0 18px;
+}
+
+/* ----- Why us ----- */
+.why-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: 1fr;
+  margin-top: 18px;
+}
+.why-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 16px;
+}
+.why-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.why-icon svg { width: 22px; height: 22px; }
+.why-item h3 {
+  font-size: 15px; font-weight: 800;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+.why-item p {
+  margin: 0; font-size: 13.5px;
+  color: var(--ink-soft); line-height: 1.5;
+}
+
+/* ----- Category block (landing product grid) ----- */
+.cat-block { margin-top: 20px; }
+.cat-block + .cat-block { margin-top: 28px; }
+.cat-block__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cat-block__head h3 {
+  font-size: 16px; font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.cat-block__more {
+  font-size: 13px; font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.cat-block__more:hover { color: var(--ink-soft); }
+
+/* ----- Steps (how it works) ----- */
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 12px;
+}
+.steps li {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 18px 18px 60px;
+}
+.step-num {
+  position: absolute;
+  left: 16px; top: 18px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px;
+}
+.steps h3 {
+  margin: 0 0 4px;
+  font-size: 15px; font-weight: 800;
+  color: var(--ink);
+}
+.steps p {
+  margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5;
+}
+
+/* ----- FAQ ----- */
+.faq {
+  display: grid; gap: 8px;
+  margin-top: 16px;
+}
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 44px 14px 16px;
+  position: relative;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  min-height: 48px;
+  display: flex; align-items: center;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "";
+  position: absolute;
+  right: 16px; top: 50%;
+  width: 10px; height: 10px;
+  border-right: 2px solid var(--ink-soft);
+  border-bottom: 2px solid var(--ink-soft);
+  transform: translateY(-70%) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+.faq-item[open] summary::after {
+  transform: translateY(-30%) rotate(-135deg);
+}
+.faq-item p {
+  margin: 0;
+  padding: 0 16px 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.faq-item a { color: var(--ink); text-decoration: underline; }
+
+/* Final CTA below FAQ */
+.final-cta {
+  margin-top: 24px;
+  text-align: center;
+}
+.final-cta p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.final-cta .cta { margin: 0 auto; }
+
+/* ----- Sticky bottom CTA (mobile-first, always visible) ----- */
+.sticky-cta {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  z-index: 60;
+  display: flex; gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+}
+.sticky-cta__call,
+.sticky-cta__wa {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px;
+  font-weight: 700; font-size: 14.5px;
+  border-radius: 12px;
+  text-decoration: none;
+}
+.sticky-cta__call {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  background: var(--steel-900);
+  color: #fff;
+}
+.sticky-cta__call svg { width: 18px; height: 18px; }
+.sticky-cta__call:active { background: var(--steel-700); }
+.sticky-cta__wa {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--wa);
+  color: #fff;
+}
+.sticky-cta__wa svg { width: 18px; height: 18px; }
+.sticky-cta__wa:active { background: var(--wa-dark); }
+
+/* ----- Landing responsive ----- */
+@media (min-width: 720px) {
+  body[data-page="landing"] { padding-bottom: 0; }
+  /* Dual hero CTAs go side-by-side on desktop */
+  .cta-stack {
+    grid-template-columns: 1fr 1fr;
+    max-width: 600px;
+  }
+  .why-grid { grid-template-columns: repeat(3, 1fr); }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .band { padding: 56px 0; }
+  /* Hide sticky CTA on desktop — header CTAs are enough */
+  .sticky-cta { display: none; }
+}
+@media (min-width: 1000px) {
+  body[data-page="landing"] .container { max-width: 960px; }
+}
+

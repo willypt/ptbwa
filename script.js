@@ -107,6 +107,19 @@
     // Sticky top bar Chat shortcut
     setHref('#top-cta', customWaUrl);
 
+    // Phone (tel:) — used on landing page hero, top bar, sticky bar, footer
+    const telHref = shop.phone ? `tel:${shop.phone.replace(/\s+/g, '')}` : null;
+    if (telHref) {
+      setHref('#top-call', telHref);
+      setHref('#hero-call', telHref);
+      setHref('#sticky-call', telHref);
+      setHref('#footer-call', telHref);
+    }
+
+    // Landing-page extras: final CTA + sticky WhatsApp share same custom-order link
+    setHref('#final-cta', customWaUrl);
+    setHref('#sticky-wa', customWaUrl);
+
     // Custom-order card CTA (every page)
     setHref('#custom-cta', customWaUrl);
     if (customOrder.buttonLabel) setText('#custom-cta-label', customOrder.buttonLabel);
@@ -138,37 +151,57 @@
     return await res.json();
   }
 
+  // How many products to show in the "featured" grid on the landing page.
+  const LANDING_FEATURED_LIMIT = 4;
+
+  function renderGrid(grid, products, shop) {
+    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    for (const product of products) {
+      frag.appendChild(renderProductCard(product, shop));
+    }
+    grid.appendChild(frag);
+  }
+
   // --- Boot ---
   async function init() {
     try {
       const data = await loadData();
       applyShopInfo(data);
 
-      // Only catalog pages have a product grid. window.__CATEGORY__ tells us which.
+      // Catalog page: window.__CATEGORY__ tells us which single category to render in full.
       const wantedCategory = window.__CATEGORY__;
-      if (!wantedCategory) return; // landing page — no products to render
+      if (wantedCategory) {
+        const category = data.categories.find((c) => c.id === wantedCategory);
+        if (!category) {
+          console.warn(`Category "${wantedCategory}" not found in products.json`);
+          return;
+        }
+        const grid = document.querySelector(`.product-grid[data-category="${wantedCategory}"]`);
+        if (!grid) return;
+        renderGrid(grid, category.products, data.shop);
 
-      const category = data.categories.find((c) => c.id === wantedCategory);
-      if (!category) {
-        console.warn(`Category "${wantedCategory}" not found in products.json`);
+        // Update subheader text from JSON
+        const sub = document.getElementById('cat-subtitle');
+        if (sub && category.subtitle) sub.textContent = `${category.subtitle} · Tap kartu untuk chat harga.`;
+        const title = document.getElementById('cat-title');
+        if (title && category.title) title.textContent = category.title;
         return;
       }
 
-      const grid = document.querySelector(`.product-grid[data-category="${wantedCategory}"]`);
-      if (!grid) return;
-
-      grid.innerHTML = '';
-      const frag = document.createDocumentFragment();
-      for (const product of category.products) {
-        frag.appendChild(renderProductCard(product, data.shop));
+      // Landing page: render all product grids found on the page.
+      // Honors data-featured-only="true" to limit to LANDING_FEATURED_LIMIT.
+      const grids = document.querySelectorAll('.product-grid[data-category]');
+      for (const grid of grids) {
+        const id = grid.getAttribute('data-category');
+        const category = data.categories.find((c) => c.id === id);
+        if (!category) continue;
+        const featuredOnly = grid.getAttribute('data-featured-only') === 'true';
+        const products = featuredOnly
+          ? category.products.slice(0, LANDING_FEATURED_LIMIT)
+          : category.products;
+        renderGrid(grid, products, data.shop);
       }
-      grid.appendChild(frag);
-
-      // Update subheader text from JSON
-      const sub = document.getElementById('cat-subtitle');
-      if (sub && category.subtitle) sub.textContent = `${category.subtitle} · Tap kartu untuk chat harga.`;
-      const title = document.getElementById('cat-title');
-      if (title && category.title) title.textContent = category.title;
     } catch (err) {
       console.error(err);
       const target = document.querySelector('.product-grid') || document.body;

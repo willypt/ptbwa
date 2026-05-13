@@ -1,79 +1,70 @@
 # Buana Wisesa — Static Catalog Site
 
-Multi-page catalog for Buana Wisesa (custom-cut plat besi SS400/A36). Every product card links to a WhatsApp chat with a SKU-specific prefilled message. No prices surfaced. Deploys on GitHub Pages.
+Static catalog + Google-Ads landing page for Buana Wisesa (custom-cut plat besi SS400). Every product card links to a WhatsApp chat with a SKU-specific prefilled message. No prices surfaced. Deploys on GitHub Pages.
 
-Design: mobile-first, 2-column grid, lynk.id-inspired card style.
+Design: mobile-first. `index.html` is a long-form Google-Ads landing page (dark industrial hero, featured products, why-us, FAQ, sticky CTA). `kotak.html` and `bulat.html` are full-catalog deep-link pages.
 
 ## Site structure
 
-- **`index.html`** — landing page: hero (logo + bio + experience badge), 2 category tiles (Kotak / Bulat), custom-order CTA
+- **`index.html`** — landing page: dark hero with logo + dual CTA (WhatsApp + tel), why-us, featured 4-of-each product grid, custom-order card, how-it-works, FAQ, sticky bottom CTA
 - **`kotak.html`** — Plat Besi Kotak catalog (16 SKUs in a 2-column grid)
 - **`bulat.html`** — Plat Besi Bulat catalog (9 SKUs in a 2-column grid)
 
-Each catalog page sets `window.__CATEGORY__` in a `<script>` tag, which tells `script.js` which slice of `products.json` to render. One JSON, three pages, no duplication.
+Each catalog page sets `window.__CATEGORY__` in a `<script>` tag, which tells `script.js` which slice of `products.json` to render. The landing page renders both grids in "featured" mode (top 4 of each). One JSON, three pages, no duplication.
 
 ## File layout
 
 ```
 buanawisesa-site/
-├── index.html         ← landing page (deploy this)
-├── kotak.html         ← Plat Kotak catalog page (deploy this)
-├── bulat.html         ← Plat Bulat catalog page (deploy this)
+├── index.html         ← landing page (deploy this — products inlined by build.sh)
+├── kotak.html         ← Plat Kotak catalog (deploy this — products inlined by build.sh)
+├── bulat.html         ← Plat Bulat catalog (deploy this — products inlined by build.sh)
 ├── styles.css         ← shared stylesheet (deploy this)
 ├── script.js          ← vanilla JS renderer (deploy this)
 ├── products.json      ← single source of truth: shop + 25 SKUs (deploy this)
-├── preview.html       ← file:// preview, opens to landing (= preview-index.html)
-├── preview-index.html ← file:// preview of landing
-├── preview-kotak.html ← file:// preview of Kotak page
-├── preview-bulat.html ← file:// preview of Bulat page
-├── images/            ← put product photos here (see images/README.md)
+├── build.sh           ← inlines products.json into the three HTML files (not deployed)
+├── serve.sh           ← local dev server wrapper (not deployed)
+├── images/            ← product photos (see images/README.md)
 │   └── README.md
 ├── CNAME.example      ← rename to "CNAME" and edit when you buy a domain
 ├── .nojekyll          ← tells GitHub Pages to skip Jekyll processing
 └── README.md          ← this file
 ```
 
-## Local preview
+## How rendering works (no Jekyll needed)
 
-**Fastest — no server.** Double-click any `preview-*.html` in Finder; they have products inlined so they work via `file://`. The tile links between previews work too since they reference the regular `index.html` / `kotak.html` / `bulat.html` (which won't render without server — so for full tile-navigation testing use the server method below).
+`products.json` is the single source of truth. `build.sh` reads it and injects `<script>window.__PRODUCTS__ = {...}</script>` into each HTML file, right before `script.js` loads. At runtime, `script.js` prefers the inlined data and only falls back to `fetch('products.json')` if the inline block isn't there.
 
-For pure visual review of layout/typography, `preview-index.html` shows the landing, `preview-kotak.html` shows the Kotak grid, etc. Do NOT deploy any `preview-*.html` — deploy the originals.
-
-**Production-mirror preview — local server.** The deployed pages use `fetch('products.json')`, which requires a server:
-
-```bash
-cd buanawisesa-site
-python3 -m http.server 8080
-# → open http://localhost:8080
-```
-
-This is what GitHub Pages will look like — tile navigation, cross-page links, everything works.
-
-**Regenerating previews** after editing `products.json` or any HTML:
-
-```bash
-python3 -c "
-import pathlib
-products = pathlib.Path('products.json').read_text()
-inline = '<script>window.__PRODUCTS__ = ' + products + ';</script>\n  '
-marker = '<script src=\"script.js\" defer></script>'
-banner = '<!-- preview-*.html: products inlined for file:// preview. DO NOT deploy. -->\n'
-for src in ('index.html', 'kotak.html', 'bulat.html'):
-    html = pathlib.Path(src).read_text()
-    out = banner + html.replace(marker, inline + marker)
-    pathlib.Path('preview-' + src).write_text(out)
-"
-cp preview-index.html preview.html
-```
+Why this beats Jekyll for this project:
+- No Ruby / gem dependencies — just `python3`, which ships with macOS
+- No Liquid templating to learn — the source HTML is plain HTML
+- Pages render statically on `file://` and on any host, not just a Jekyll-aware one
+- `.nojekyll` stays in place so GitHub Pages skips its Jekyll build entirely
 
 ## Editing content
 
-Everything is data-driven. To change shop name, bio, WhatsApp number, or any product, edit `products.json` and reload — no build step.
+1. Edit `products.json` (shop info, products) or any HTML/CSS
+2. Run `./build.sh` to re-inline products into the HTML files
+3. Commit and push
 
-Key fields:
-- `shop.whatsapp` — international format, digits only: `6281574628698`
+The build is idempotent — re-running replaces the previous inlined block. The inlined block is wrapped in `<!-- BUILD:DATA -->...<!-- /BUILD:DATA -->` so you can spot it in diffs.
+
+Key fields in `products.json`:
+- `shop.whatsapp` — international format, digits only: `6281388313811`
+- `shop.phone` — international with `+`: `+6281388313811` (used by `tel:` link)
 - `shop.tagline`, `shop.experience`, `shop.location` — surface on hero + footer
-- `categories[].products[].skuMessage` — the exact text that appears in WhatsApp pre-fill
+- `categories[].products[].skuMessage` — the exact text that appears in the WhatsApp pre-fill
+
+## Local development
+
+```bash
+./serve.sh           # serves on http://localhost:8000
+./serve.sh 8080      # custom port
+```
+
+`serve.sh` just runs `python3 -m http.server` — no install required on macOS. After `./build.sh`, the pages also work on `file://` (double-click any HTML file in Finder).
+
+Hot-reload isn't built in; refresh manually after edits.
 
 ## Step-by-step: ship to production
 
