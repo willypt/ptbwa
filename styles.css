@@ -630,7 +630,7 @@ body[data-page="landing"] {
     grid-template-columns: 1fr 1fr;
     max-width: 600px;
   }
-  .why-grid { grid-template-columns: repeat(3, 1fr); }
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: repeat(3, 1fr); }
   .band { padding: 56px 0; }
   /* Hide sticky CTA on desktop — header CTAs are enough */
